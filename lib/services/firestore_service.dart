@@ -12,7 +12,22 @@ class FirestoreService {
   final CollectionReference _postsColleectionRefrence =
       FirebaseFirestore.instance.collection("posts");
 
-  final StreamController<List<Post>> 
+  final StreamController<List<Post>> _postData = StreamController<
+      List<
+          Post>>.broadcast(); //gets the stream for the Stream for the broadcast add into the _postdata
+
+  Stream listenToPostRealtime() {
+    _postsColleectionRefrence.snapshots().listen((postdata) {
+      if (postdata.docs.isNotEmpty) {
+        var posts = postdata.docs
+            .map((post) => Post.fromMap(post.data()))
+            .where((item) => item.title != null) //fucking arrow fcuntions
+            .toList(); //querry snapshot is to be passed to the model for forMap() Map<String, dynamic>
+
+        _postData.add(posts);//added the streams to the controller for the broadcast
+      }
+    });
+  }
 
   Future createUser(User1 user) async {
     try {
