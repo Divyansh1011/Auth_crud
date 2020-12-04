@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:compound/models/post.dart';
 import 'package:compound/models/users.dart';
+import 'package:flutter/services.dart';
 
 class FirestoreService {
   final CollectionReference _userColleectionRefrence =
@@ -8,6 +11,8 @@ class FirestoreService {
 
   final CollectionReference _postsColleectionRefrence =
       FirebaseFirestore.instance.collection("posts");
+
+  final StreamController<List<Post>> 
 
   Future createUser(User1 user) async {
     try {
@@ -35,15 +40,21 @@ class FirestoreService {
     }
   }
 
-  Future getPostsOnceOff(Post post)async 
-  {
-    try
-    {
-      
+  Future getPostsOnceOff() async {
+    try {
+      var postDocuments = await _postsColleectionRefrence.limit(15).get();
+      if (postDocuments.docs.isNotEmpty) {
+        return postDocuments.docs
+            .map((snapshot) => Post.fromMap(snapshot.data()))
+            .where((mappedItem) => mappedItem.title != null)
+            .toList();
+      }
+    } catch (e) {
+      if (e is PlatformException) {
+        return e.message;
+      }
 
-    }catch(e)
-    {
-
+      return e.toString();
     }
   }
 }

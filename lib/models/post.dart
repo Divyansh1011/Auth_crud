@@ -15,15 +15,15 @@ class Post {
     };
   }
 
-  Post fromMap(Map<String, dynamic> map) {
+ static Post fromMap(Map<String, dynamic> map) {
     if (map == null) {
       return null;
+    } else {
+      return Post(
+        title: map['title'],
+        imageurl: map['imageUrl'],
+        userId: map['userId'],
+      );
     }
-
-    return Post(
-      title: map['title'],
-      imageurl: map['imageUrl'],
-      userId: map['userId'],
-    );
   }
 }

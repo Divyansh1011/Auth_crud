@@ -1,4 +1,3 @@
-import 'package:compound/models/post.dart';
 import 'package:compound/ui/shared/ui_helpers.dart';
 import 'package:compound/ui/widgets/post_item.dart';
 import 'package:compound/viewmodels/home_view_model.dart';
@@ -12,6 +11,7 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<HomeViewModel>.reactive(
         viewModelBuilder: () => HomeViewModel(),
+        onModelReady: (model) => model.getPosts(),
         builder: (context, model, child) => Scaffold(
               backgroundColor: Colors.white,
               floatingActionButton: FloatingActionButton(
@@ -36,12 +36,20 @@ class HomeView extends StatelessWidget {
                       ],
                     ),
                     Expanded(
-                        child: ListView.builder(
-                      itemCount: 3,
-                      itemBuilder: (context, index) => PostItem(
-                        post: Post(title: '$index Title'),
-                      ),
-                    ))
+                      child: model.posts != null
+                          ? ListView.builder(
+                              itemCount: model.posts.length,
+                              itemBuilder: (context, index) => PostItem(
+                                post: model.posts[index],
+                              ),
+                            )
+                          : Center(
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation(
+                                    Theme.of(context).primaryColor),
+                              ),
+                            ),
+                    )
                   ],
                 ),
               ),
